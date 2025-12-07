@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Convite Especial para Padrinhos de Casamento">
+    <title>Ronaldo & Vitória - Convite Especial</title>
+    
+    <!-- Google Fonts: Cinzel (Solene) e Montserrat (Legibilidade) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Montserrat:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Configurações Globais */
+        :root {
+            --gold: #D4AF37;
+            --white: #F9FAFB;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            overflow: hidden; /* Controlado via JS na abertura */
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cinzel', serif;
+        }
+
+        .script-font {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* Scroll Snap Logic - Comportamento Magnético */
+        .snap-container {
+            height: 100vh;
+            width: 100vw;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch; /* Suavidade no iOS */
+        }
+
+        .section {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Backgrounds e Overlays */
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+            transition: transform 10s ease; /* Efeito Ken Burns lento */
+        }
+
+        /* Restrição de Overlay Solicitada: Max 25% */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.25); 
+            z-index: -1;
+        }
+
+        /* Animações de Entrada (Fade In Up) */
+        .reveal-text {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .section.active .reveal-text {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Delays para elementos em sequência */
+        .delay-100 { transition-delay: 100ms; }
+        .delay-300 { transition-delay: 300ms; }
+        .delay-500 { transition-delay: 500ms; }
+        .delay-700 { transition-delay: 700ms; }
+
+        /* Estilo da Seta Flutuante */
+        .scroll-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            z-index: 50;
+            animation: float 2s infinite ease-in-out;
+            opacity: 0.8;
+            transition: opacity 0.5s ease;
+        }
+
+        .scroll-hint.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 10px); }
+        }
+
+        /* Tela de Abertura (Envelope Virtual) */
+        #opener {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        #opener.open {
+            transform: translateY(-100%);
+        }
+
+        .wax-seal {
+            width: 80px;
+            height: 80px;
+            background: #b59048; /* Dourado escuro */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            cursor: pointer;
+            border: 2px solid #e5c570;
+            animation: pulse-seal 2s infinite;
+        }
+
+        @keyframes pulse-seal {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(181, 144, 72, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(181, 144, 72, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(181, 144, 72, 0); }
+        }
+
+        /* Melhoria de leitura devido ao overlay leve */
+        .text-shadow-strong {
+            text-shadow: 0px 2px 10px rgba(0,0,0,0.9);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tela de Abertura -->
+    <div id="opener">
+        <div class="text-center text-white px-6">
+            <h2 class="text-2xl mb-6 tracking-widest uppercase">Convite Solene</h2>
+            <div class="wax-seal mx-auto mb-4" onclick="openInvitation()">
+                <i class="fas fa-scroll text-3xl text-white"></i>
+            </div>
+            <p class="text-sm font-light tracking-wide opacity-80 mt-4">Toque no selo para abrir</p>
+        </div>
+    </div>
+
+    <!-- Indicador de Scroll -->
+    <div id="scrollHint" class="scroll-hint">
+        <i class="fas fa-chevron-down text-3xl"></i>
+    </div>
+
+    <!-- Container Principal com Scroll Snap -->
+    <main class="snap-container" id="mainContainer">
+
+        <!-- PÁGINA 1: Introdução e Versículo -->
+        <section class="section" id="section1">
+            <div class="bg-image" style="background-image: url('https://lh3.googleusercontent.com/pw/AP1GczNfobFO9-M1RCEJ0MjQCFKigCGA0zJ-W-gRXR5p5NucnSILiFzF6Pb-i4TzuuI5hUZRomaMKfVc6uPYimEh91mNq-_iTMdFVmk0LMI5V6Er1TycPLcnLwpFx0iO6JFsJjiAyXOoZrOi3L4LWYp0h2Cu3g=w547-h365-s-no-gm?authuser=0');"></div>
+            <div class="overlay"></div>
+            
+            <div class="text-center text-white z-10 px-6 max-w-lg">
+                <div class="reveal-text delay-100 mb-6">
+                    <i class="fas fa-church text-4xl text-yellow-500 mb-4 drop-shadow-lg"></i>
+                </div>
+                <h1 class="reveal-text delay-300 text-3xl md:text-5xl font-bold mb-4 text-shadow-strong tracking-wide">
+                    Edificando sobre a Rocha
+                </h1>
+                <div class="w-16 h-1 bg-yellow-500 mx-auto my-6 reveal-text delay-500 rounded"></div>
+                
+                <div class="glass-panel reveal-text delay-700">
+                    <p class="text-lg md:text-xl italic font-serif leading-relaxed text-shadow-strong">
+                        "O cordão de três dobras não se quebra facilmente."
+                    </p>
+                    <p class="text-sm mt-3 uppercase tracking-widest font-bold text-yellow-400 text-shadow-strong">
+                        Eclesiastes 4:12
+                    </p>
+                </div>
+                
+                <p class="reveal-text delay-700 mt-8 text-sm uppercase tracking-widest text-shadow-strong opacity-90">
+                    Ronaldo & Vitória
+                </p>
+            </div>
+        </section>
+
+        <!-- PÁGINA 2: Pais e Gratidão -->
+        <section class="section" id="section2">
+            <div class="bg-image" style="background-image: url('https://lh3.googleusercontent.com/pw/AP1GczMSaj_G7pJC14ICQSSyujgNhuj6hEkJ91T4Sx0VatqQBHMcp8hgHqjCwtzYRthBzTcsS_FHrlf3BydagxqyeAutQgyGhv7NLUSMAM21SXoNhh8HEKmt0M_morwqN4OUS3BMTX-kr6b21An_xbqc4TOG4Q=w576-h384-s-no-gm?authuser=0');"></div>
+            <div class="overlay"></div>
+
+            <div class="text-center text-white z-10 px-4 max-w-lg w-full">
+                <div class="reveal-text delay-100">
+                    <h2 class="text-2xl font-bold mb-2 text-shadow-strong text-yellow-400">Os Noivos</h2>
+                    <p class="text-xl mb-6 font-serif text-shadow-strong">Ronaldo Barros de Araújo<br>&<br>Vitória Barbosa de Araújo</p>
+                </div>
+
+                <div class="border-l-2 border-yellow-500 pl-4 text-left mx-4 reveal-text delay-300 glass-panel !mx-0 !p-4 mb-6">
+                    <p class="text-xs uppercase text-yellow-300 mb-1 font-bold">Pais do Noivo</p>
+                    <p class="text-sm font-semibold text-shadow-strong mb-3">Natividade Pereira de Araújo<br>Maria Barros de Araújo</p>
+                    
+                    <p class="text-xs uppercase text-yellow-300 mb-1 font-bold">Pais da Noiva</p>
+                    <p class="text-sm font-semibold text-shadow-strong">Reilson Barbosa Santos<br>Vânia Nunes de Araújo Pereira</p>
+                </div>
+
+                <p class="reveal-text delay-500 text-sm md:text-base leading-relaxed text-shadow-strong italic px-2">
+                    "Reconhecemos a importância da intercessão e do exemplo cristão de vocês em nossa jornada até o altar."
+                </p>
+            </div>
+        </section>
+
+        <!-- PÁGINA 3: O Convite (Petição) -->
+        <section class="section" id="section3">
+            <div class="bg-image" style="background-image: url('https://lh3.googleusercontent.com/pw/AP1GczPqr8xTnhYTfbsTSgc_dtcnhYYf_9JPUWj07Ujd3ajZQ1zebIxhK3xpcQzOGlltZ4mx7X55nGS4vm4J2kQjkva6LDW84Y3ju6Fnsmn33N5ZnbVdyfpLeqM0XYPvh6SaU6_1qP6c4ZNI7nx4kdb1QcJ0LQ=w576-h384-s-no-gm?authuser=0');"></div>
+            <div class="overlay"></div>
+
+            <div class="text-center text-white z-10 px-6 max-w-lg">
+                <div class="reveal-text delay-100 mb-4">
+                    <i class="fas fa-envelope-open-text text-3xl text-yellow-500 drop-shadow-md"></i>
+                </div>
+                
+                <h2 class="reveal-text delay-300 text-3xl font-bold mb-6 text-shadow-strong font-serif text-yellow-400">
+                    Nossa Petição
+                </h2>
+
+                <div class="glass-panel reveal-text delay-500">
+                    <p class="text-base md:text-lg leading-relaxed text-shadow-strong mb-4">
+                        Sob a bênção de nossos pais, temos a honra de convidar
+                    </p>
+                    <h3 class="text-xl md:text-2xl font-bold text-yellow-300 my-4 script-font text-shadow-strong" style="font-family: 'Great Vibes', cursive; font-size: 2.5rem;">
+                        Pr. Osmar &<br>Miss. Maria Raimunda
+                    </h3>
+                    <p class="text-base md:text-lg leading-relaxed text-shadow-strong">
+                        para a nobre missão de serem nossos <strong>Padrinhos de Casamento</strong>, sendo nossas testemunhas diante de Deus e dos homens.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 4: Aceite e Manual -->
+        <section class="section" id="section4">
+            <div class="bg-image" style="background-image: url('https://lh3.googleusercontent.com/pw/AP1GczPVMD1qDJ56drxVYPfCDXrcEgPZd6EMxOBtnBl0OV_syDCqsNEG8iMJw4m8pW0tRAmJoIA0eki_8C6wB4cNGyBHlS2WacwKw7Vv3AyD_Cv-VVh3eyXik7luWHYnOn_dkwieOI3MPudPmlOxgIUCuVBxiw=w547-h365-s-no-gm?authuser=0');"></div>
+            <div class="overlay"></div>
+
+            <div class="text-center text-white z-10 px-6 max-w-lg w-full pb-12">
+                <h2 class="reveal-text delay-100 text-2xl font-bold mb-6 text-shadow-strong uppercase tracking-wide">
+                    Sua Resposta
+                </h2>
+
+                <div class="reveal-text delay-300 mb-8">
+                    <!-- Link genérico do WhatsApp que permite escolher o contato -->
+                    <a href="whatsapp://send?text=Queridos%20Afilhados%2C%0A%0A%C3%89%20com%20o%20cora%C3%A7%C3%A3o%20grato%20a%20Deus%20que%20aceitamos%20a%20honrosa%20miss%C3%A3o%20de%20sermos%20seus%20Padrinhos%20e%20testemunhas%20desta%20alian%C3%A7a.%20Estaremos%20ao%20lado%20de%20voc%C3%AAs%20como%20suporte%20e%20ora%C3%A7%C3%A3o.%20Aguardamos%20as%20instru%C3%A7%C3%B5es%20para%20o%20grande%20dia%21" 
+                       class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition transform hover:scale-105 border-2 border-white/20">
+                        <i class="fab fa-whatsapp text-2xl mr-2 align-middle"></i>
+                        <span class="align-middle">ACEITAR MISSÃO</span>
+                    </a>
+                    <p class="text-xs mt-2 opacity-80 text-shadow-strong">Toque para escolher o contato dos noivos</p>
+                </div>
+
+                <div class="glass-panel reveal-text delay-500 border-yellow-500/50">
+                    <div class="flex items-center justify-center mb-2">
+                        <i class="fas fa-book-bible text-yellow-400 mr-2"></i>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-yellow-400">Próximos Passos</h3>
+                    </div>
+                    <p class="text-sm leading-relaxed text-shadow-strong">
+                        Após o aceite, enviaremos o <strong>Manual dos Padrinhos</strong> com detalhes exclusivos sobre os trajes, a logística de chegada antecipada (protocolo), data, horário e local.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Rodapé discreto -->
+            <div class="absolute bottom-2 w-full text-center opacity-40 text-[10px] text-white">
+                Ronaldo & Vitória - 2025
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Função para abrir o "Envelope"
+        function openInvitation() {
+            const opener = document.getElementById('opener');
+            opener.classList.add('open');
+            
+            // Inicia a observação das seções após abrir
+            setTimeout(() => {
+                initObserver();
+                // Força a animação da primeira seção
+                document.getElementById('section1').classList.add('active');
+            }, 500);
+        }
+
+        // Lógica de Intersection Observer para Animações e Seta
+        function initObserver() {
+            const sections = document.querySelectorAll('.section');
+            const scrollHint = document.getElementById('scrollHint');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Adiciona classe para animar textos
+                        entry.target.classList.add('active');
+
+                        // Lógica da Seta (Ocultar na última página)
+                        if (entry.target.id === 'section4') {
+                            scrollHint.classList.add('hidden');
+                        } else {
+                            scrollHint.classList.remove('hidden');
+                        }
+                    }
+                });
+            }, {
+                threshold: 0.5 // Aciona quando 50% da seção está visível
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+    </script>
+</body>
+</html>
+
